@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <erl_nif.h>
 
-ERL_NIF_TERM format(ErlNifEnv *env, ERL_NIF_TERM term)
+static ERL_NIF_TERM format(ErlNifEnv *env, ERL_NIF_TERM term)
 {
 	char address[19];
 	sprintf(address, "0x%0.16lx", term);
@@ -53,4 +53,9 @@ static ErlNifFunc nif_funcs[] =
 	{"parse", 1, parse}
 };
 
-ERL_NIF_INIT(Elixir.ETerm, nif_funcs, NULL, NULL, NULL, NULL)
+static int upgrade(ErlNifEnv* env, void** priv_data, void** old_priv_data, ERL_NIF_TERM load_info)
+{
+	return 0;
+}
+
+ERL_NIF_INIT(Elixir.ETerm, nif_funcs, NULL, NULL, upgrade, NULL)

@@ -4,7 +4,7 @@ Understand Erlang Terms.
 
 ## Compile C code
 
-Just change `ERL_INCLUDE_PATH` in `Makefile`. After get the dependency `elixir_make`, every time run `mix compile`, it will also invoke `make` to compile C code if necessary.
+Change `ERL_INCLUDE_PATH` in `Makefile`. After get the dependency `elixir_make`, every time run `mix compile`, it will also invoke `make` to compile C code if necessary.
 
 ## Usage
 
@@ -22,7 +22,7 @@ iex> ETerm.show({1, 2, 3})
 0x000000001921500a      boxed   {1, 2, 3}
 00000000_00000000_00000000_00000000_00011001_00100001_01010000_00001010        boxed
 0x0000000019215008      header  tuple_size: 3
-00000000_00000000_00000000_00000000_00000000_00000000_00000000_11000000   arity val
+00000000_00000000_00000000_00000000_00000000_00000000_00000000_11000000        arity val
 0x0000000019215010      body    1
 00000000_00000000_00000000_00000000_00000000_00000000_00000000_00011111        small int
 0x0000000019215018      body    2
