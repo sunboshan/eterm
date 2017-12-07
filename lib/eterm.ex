@@ -5,14 +5,43 @@ defmodule ETerm do
 
   @on_load :load_nif
 
+  @doc """
+  Load the NIF on module load, using priv folder path.
+  """
   def load_nif do
-    :erlang.load_nif('priv/eterm', 0)
+    :code.priv_dir(:eterm)
+    |> Path.join("eterm")
+    |> :erlang.load_nif(0)
   end
 
+  @spec parse(term) :: tuple
+  @doc """
+  Parse the given term from NIF.
+  """
   def parse(_) do
     raise "NIF parse/1 not implemented"
   end
 
+  @spec info(pid) :: true
+  @doc """
+  Print the stack and heap info for a given process.
+  """
+  def info(pid) when is_pid(pid) do
+    {_, info} = Process.info(pid, :garbage_collection_info)
+    IO.puts("pid:             #{inspect(pid)}")
+    IO.puts("heap_block_size: #{Keyword.get(info, :heap_block_size)}")
+    IO.puts("stack_size:      #{Keyword.get(info, :stack_size)}")
+    IO.puts("heap_size:       #{Keyword.get(info, :heap_size)}")
+    IO.puts ""
+    :hipe_bifs.show_estack(pid)
+    IO.puts ""
+    :hipe_bifs.show_heap(pid)
+  end
+
+  @spec show(term) :: :ok
+  @doc """
+  Show the erlang term in pretty format.
+  """
   def show([_ | _] = term) do
     {:list, val, {car, car_v}, {cdr, cdr_v}} = parse(term)
     [h | t] = term
@@ -49,7 +78,7 @@ defmodule ETerm do
         IO.puts(transform(header_v))
         Enum.each(body, fn {k, v} ->
           IO.puts([k, ?\t, "body"])
-          IO.puts(transform(v))
+          IO.puts(transform_body(v))
         end)
     end
   end
@@ -88,6 +117,16 @@ defmodule ETerm do
   end
   defp transform([a, b | t]) do
     [to_b(a), to_b(b), ?_ | transform(t)]
+  end
+
+  defp transform_body([h, t]) do
+    [to_b(h), to_b(t)]
+  end
+  defp transform_body([?0, ?x | t]) do
+    transform_body(t)
+  end
+  defp transform_body([a, b | t]) do
+    [to_b(a), to_b(b), ?_ | transform_body(t)]
   end
 
   defp get_header([a, b, ?0, ?0], [?0, ?0, _, _]) do
