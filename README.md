@@ -6,6 +6,18 @@ Understand Erlang Terms.
 
 Change `ERL_INCLUDE_PATH` in `Makefile`. After get the dependency `elixir_make`, every time run `mix compile`, it will also invoke `make` to compile C code if necessary.
 
+## Use as library
+
+In `mix.exs`
+```
+  defp deps do
+    [
+      {:eterm, git: "https://github.com/sunboshan/eterm.git"},
+    ]
+  end
+```
+Then `mix do deps.get, deps.compile`.
+
 ## Usage
 
 ```
